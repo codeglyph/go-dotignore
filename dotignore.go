@@ -72,13 +72,15 @@ func buildIgnorePatterns(patterns []string) ([]IgnorePattern, error) {
 	var ignorePatterns []IgnorePattern
 
 	for _, pattern := range patterns {
-		trimmed := strings.TrimSpace(pattern)
-		if trimmed == "" || strings.HasPrefix(trimmed, "#") {
+		pattern := strings.TrimSpace(pattern)
+		if pattern == "" || strings.HasPrefix(pattern, "#") {
 			continue
 		}
 
-		isNegation := strings.HasPrefix(trimmed, "!")
-		if isNegation && len(trimmed) == 1 {
+		// normalize pattern
+		pattern = filepath.Clean(pattern)
+		isNegation := strings.HasPrefix(pattern, "!")
+		if isNegation && len(pattern) == 1 {
 			// A single '!' is invalid
 			return nil, errors.New("invalid pattern: '!'")
 		}
@@ -87,10 +89,9 @@ func buildIgnorePatterns(patterns []string) ([]IgnorePattern, error) {
 			pattern = pattern[1:]
 		}
 
-		normalizedPattern := filepath.Clean(trimmed)
-		patternDirs := strings.Split(pattern, string(filepath.Separator))
+		patternDirs := strings.Split(pattern, "/")
 
-		regexPattern, err := internal.BuildRegex(normalizedPattern)
+		regexPattern, err := internal.BuildRegex(pattern)
 		if err != nil {
 			return nil, err
 		}
