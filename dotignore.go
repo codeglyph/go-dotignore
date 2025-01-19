@@ -19,23 +19,12 @@ type IgnorePattern struct {
 	Negate       bool
 }
 
-/**
- * PatternMatcher provides methods to parse, store, and evaluate ignore patterns against file paths.
- */
+// PatternMatcher provides methods to parse, store, and evaluate ignore patterns against file paths.
 type PatternMatcher struct {
 	ignorePatterns []IgnorePattern
 }
 
-/**
- * NewPatternMatcher initializes a new PatternMatcher instance from a list of string patterns.
- *
- * Parameters:
- * - patterns: A slice of strings representing ignore patterns.
- *
- * Returns:
- * - A pointer to a PatternMatcher instance.
- * - An error if any of the patterns are invalid.
- */
+// NewPatternMatcher initializes a new PatternMatcher instance from a list of string patterns.
 func NewPatternMatcher(patterns []string) (*PatternMatcher, error) {
 	ignorePatterns, err := buildIgnorePatterns(patterns)
 	if err != nil {
@@ -46,16 +35,7 @@ func NewPatternMatcher(patterns []string) (*PatternMatcher, error) {
 	}, nil
 }
 
-/**
- * NewPatternMatcherFromReader initializes a new PatternMatcher instance from an io.Reader.
- *
- * Parameters:
- * - reader: An io.Reader to read patterns from.
- *
- * Returns:
- * - A pointer to a PatternMatcher instance.
- * - An error if the patterns cannot be parsed.
- */
+// NewPatternMatcherFromReader initializes a new PatternMatcher instance from an io.Reader.
 func NewPatternMatcherFromReader(reader io.Reader) (*PatternMatcher, error) {
 	patterns, err := internal.ReadLines(reader)
 	if err != nil {
@@ -64,16 +44,7 @@ func NewPatternMatcherFromReader(reader io.Reader) (*PatternMatcher, error) {
 	return NewPatternMatcher(patterns)
 }
 
-/**
- * NewPatternMatcherFromFile reads a file containing ignore patterns and returns a PatternMatcher instance.
- *
- * Parameters:
- * - filepath: The path to the file containing ignore patterns.
- *
- * Returns:
- * - A pointer to a PatternMatcher instance.
- * - An error if the file cannot be read or patterns are invalid.
- */
+// NewPatternMatcherFromFile reads a file containing ignore patterns and returns a PatternMatcher instance.
 func NewPatternMatcherFromFile(filepath string) (*PatternMatcher, error) {
 	fileReader, err := os.Open(filepath)
 	if err != nil {
@@ -88,16 +59,7 @@ func NewPatternMatcherFromFile(filepath string) (*PatternMatcher, error) {
 	return NewPatternMatcher(patterns)
 }
 
-/**
- * Matches checks if the given file path matches any of the ignore patterns in the PatternMatcher.
- *
- * Parameters:
- * - file: The file path to check.
- *
- * Returns:
- * - A boolean indicating if the file matches an ignore pattern.
- * - An error if the matching process fails.
- */
+// Matches checks if the given file path matches any of the ignore patterns in the PatternMatcher.
 func (p *PatternMatcher) Matches(file string) (bool, error) {
 	file = filepath.Clean(file)
 	if file == "." {
