@@ -121,24 +121,24 @@ func TestBuildIgnorePatternsStripEmptyPatterns(t *testing.T) {
 func TestBuildIgnorePatternsExceptionFlag(t *testing.T) {
 	patterns := []string{"docs", "!docs/README.md"}
 	ignorePatterns, _ := buildIgnorePatterns(patterns)
-	if !ignorePatterns[1].Negate {
-		t.Errorf("expected negate to be true, got %v", ignorePatterns[1].Negate)
+	if !ignorePatterns[1].negate {
+		t.Errorf("expected negate to be true, got %v", ignorePatterns[1].negate)
 	}
 }
 
 func TestBuildIgnorePatternsLeadingSpaceTrimmed(t *testing.T) {
 	patterns := []string{"docs", "  !docs/README.md"}
 	ignorePatterns, _ := buildIgnorePatterns(patterns)
-	if !ignorePatterns[1].Negate {
-		t.Errorf("expected negate to be true, got %v", ignorePatterns[1].Negate)
+	if !ignorePatterns[1].negate {
+		t.Errorf("expected negate to be true, got %v", ignorePatterns[1].negate)
 	}
 }
 
 func TestBuildIgnorePatternsTrailingSpaceTrimmed(t *testing.T) {
 	patterns := []string{"docs", "!docs/README.md  "}
 	ignorePatterns, _ := buildIgnorePatterns(patterns)
-	if !ignorePatterns[1].Negate {
-		t.Errorf("expected negate to be true, got %v", ignorePatterns[1].Negate)
+	if !ignorePatterns[1].negate {
+		t.Errorf("expected negate to be true, got %v", ignorePatterns[1].negate)
 	}
 }
 

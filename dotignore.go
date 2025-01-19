@@ -12,16 +12,16 @@ import (
 	"github.com/codeglyph/go-dotignore/internal"
 )
 
-type IgnorePattern struct {
+type ignorePattern struct {
 	pattern      string
 	regexPattern *regexp.Regexp
 	parentDirs   []string
-	Negate       bool
+	negate       bool
 }
 
 // PatternMatcher provides methods to parse, store, and evaluate ignore patterns against file paths.
 type PatternMatcher struct {
-	ignorePatterns []IgnorePattern
+	ignorePatterns []ignorePattern
 }
 
 // NewPatternMatcher initializes a new PatternMatcher instance from a list of string patterns.
@@ -68,8 +68,8 @@ func (p *PatternMatcher) Matches(file string) (bool, error) {
 	return matches(file, p.ignorePatterns)
 }
 
-func buildIgnorePatterns(patterns []string) ([]IgnorePattern, error) {
-	var ignorePatterns []IgnorePattern
+func buildIgnorePatterns(patterns []string) ([]ignorePattern, error) {
+	var ignorePatterns []ignorePattern
 
 	for _, pattern := range patterns {
 		pattern := strings.TrimSpace(pattern)
@@ -96,11 +96,11 @@ func buildIgnorePatterns(patterns []string) ([]IgnorePattern, error) {
 			return nil, err
 		}
 
-		ignorePatterns = append(ignorePatterns, IgnorePattern{
+		ignorePatterns = append(ignorePatterns, ignorePattern{
 			pattern:      pattern,
 			regexPattern: regexPattern,
 			parentDirs:   patternDirs,
-			Negate:       isNegation,
+			negate:       isNegation,
 		})
 	}
 
@@ -108,7 +108,7 @@ func buildIgnorePatterns(patterns []string) ([]IgnorePattern, error) {
 }
 
 // matches checks if the file matches patterns efficiently.
-func matches(file string, ignorePatterns []IgnorePattern) (bool, error) {
+func matches(file string, ignorePatterns []ignorePattern) (bool, error) {
 	// Normalize the file path to use OS-specific separators
 	normalizedFile := filepath.FromSlash(file)
 
@@ -128,7 +128,7 @@ func matches(file string, ignorePatterns []IgnorePattern) (bool, error) {
 		if !matches && parentPath != "." && len(pattern.parentDirs) <= len(parentDirs) {
 			subPath := strings.Join(parentDirs[:len(pattern.parentDirs)], string(filepath.Separator))
 			subPathRegex, _ := internal.BuildRegex(subPath)
-			subPathIgnorePattern := IgnorePattern{
+			subPathIgnorePattern := ignorePattern{
 				pattern:      subPath,
 				regexPattern: subPathRegex,
 			}
@@ -137,7 +137,7 @@ func matches(file string, ignorePatterns []IgnorePattern) (bool, error) {
 
 		// Update match status based on negation
 		if matches {
-			matched = !pattern.Negate
+			matched = !pattern.negate
 		}
 	}
 
@@ -145,12 +145,12 @@ func matches(file string, ignorePatterns []IgnorePattern) (bool, error) {
 }
 
 // matchWithRegex converts a pattern to a regular expression and checks if it matches the path.
-func matchWithRegex(path string, ignorePattern IgnorePattern) (bool, error) {
-	if _, err := filepath.Match(ignorePattern.pattern, path); err != nil {
+func matchWithRegex(path string, ignorePat ignorePattern) (bool, error) {
+	if _, err := filepath.Match(ignorePat.pattern, path); err != nil {
 		return false, err
 	}
 
-	matched := ignorePattern.regexPattern.MatchString(path)
+	matched := ignorePat.regexPattern.MatchString(path)
 
 	return matched, nil
 }
