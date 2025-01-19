@@ -160,6 +160,31 @@ We welcome contributions to **go-dotignore**! Here's how you can contribute:
 4. Run all tests to ensure nothing breaks.
 5. Submit a pull request.
 
+### Issue Templates
+
+We encourage you to follow these templates when creating an issue:
+
+#### Bug Report
+
+- **Title**: A short and descriptive title.
+- **Description**: What went wrong? Include steps to reproduce the issue.
+- **Expected Behavior**: What you expected to happen.
+- **Environment**: Include Go version, OS, and library version.
+- **Additional Context**: Add any logs, error messages, or relevant information.
+
+#### Feature Request
+
+- **Title**: A concise summary of the feature.
+- **Description**: What problem does this feature solve?
+- **Proposed Solution**: How should the feature work?
+- **Additional Context**: Provide any mockups, examples, or supporting details.
+
+### Pull Request Guidelines
+
+- Ensure your code passes all tests.
+- Write clear and concise commit messages.
+- Provide a description of the change and link to related issues (if any).
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
