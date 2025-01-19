@@ -153,10 +153,10 @@ func TestBuildIgnorePatternsErrorSingleException(t *testing.T) {
 func TestBuildIgnorePatternsFolderSplit(t *testing.T) {
 	patterns := []string{"docs/config/CONFIG.md"}
 	ignorePatterns, _ := buildIgnorePatterns(patterns)
-	if ignorePatterns[0].ParentDirs[0] != "docs" {
-		t.Errorf("expected first element in dirs slice to be docs, got %v", ignorePatterns[0].ParentDirs[0])
+	if ignorePatterns[0].parentDirs[0] != "docs" {
+		t.Errorf("expected first element in dirs slice to be docs, got %v", ignorePatterns[0].parentDirs[0])
 	}
-	if ignorePatterns[0].ParentDirs[1] != "config" {
-		t.Errorf("expected second element in dirs slice to be config, got %v", ignorePatterns[0].ParentDirs[1])
+	if ignorePatterns[0].parentDirs[1] != "config" {
+		t.Errorf("expected second element in dirs slice to be config, got %v", ignorePatterns[0].parentDirs[1])
 	}
 }
