@@ -1,5 +1,4 @@
 [![build](https://github.com/codeglyph/go-dotignore/actions/workflows/go.yml/badge.svg)](https://github.com/codeglyph/go-dotignore/actions/workflows/go.yml)
-[![tests](https://github.com/codeglyph/go-dotignore/actions/workflows/go.yml/badge.svg)](https://github.com/codeglyph/go-dotignore/actions/workflows/go.yml)
 
 # go-dotignore
 
