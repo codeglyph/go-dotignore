@@ -1,3 +1,6 @@
+[![build](https://github.com/codeglyph/go-dotignore/actions/workflows/go.yml/badge.svg)](https://github.com/codeglyph/go-dotignore/actions/workflows/go.yml)
+[![tests](https://github.com/codeglyph/go-dotignore/actions/workflows/go.yml/badge.svg)](https://github.com/codeglyph/go-dotignore/actions/workflows/go.yml)
+
 # go-dotignore
 
 **go-dotignore** is a powerful Go library for parsing `.gitignore`-style files and matching file paths against specified ignore patterns. It provides full support for advanced ignore rules, negation patterns, and wildcards, making it an ideal choice for file exclusion in Go projects.
