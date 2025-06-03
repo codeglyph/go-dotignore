@@ -1,196 +1,179 @@
 [![build](https://github.com/codeglyph/go-dotignore/actions/workflows/build.yml/badge.svg)](https://github.com/codeglyph/go-dotignore/actions/workflows/build.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/codeglyph/go-dotignore)](https://goreportcard.com/report/github.com/codeglyph/go-dotignore)
+[![GoDoc](https://godoc.org/github.com/codeglyph/go-dotignore?status.svg)](https://godoc.org/github.com/codeglyph/go-dotignore)
 
 # go-dotignore
 
-**go-dotignore** is a powerful Go library for parsing `.gitignore`-style files and matching file paths against specified ignore patterns. It provides full support for advanced ignore rules, negation patterns, and wildcards, making it an ideal choice for file exclusion in Go projects.
+**go-dotignore** is a high-performance Go library for parsing `.gitignore`-style files and matching file paths against specified ignore patterns. It provides full support for advanced ignore rules, negation patterns, and wildcards, making it an ideal choice for file exclusion in Go projects.
 
 ## Features
 
-- Parse `.gitignore`-style files seamlessly
-- Negation patterns (`!`) to override ignore rules
-- Support for directories, files, and advanced wildcards like `**`
-- Compatible with custom ignore files
-- Does not process nested `.gitignore` files; all patterns are treated from a single source
-- Fully compliant with the [`.gitignore` specification](https://git-scm.com/docs/gitignore)
-- Lightweight API built on Go best practices
+- 🚀 **High Performance** - Optimized pattern matching with efficient regex compilation
+- 📁 **Complete .gitignore Support** - Full compatibility with Git's ignore specification
+- 🔄 **Negation Patterns** - Use `!` to override ignore rules
+- 🌟 **Advanced Wildcards** - Support for `*`, `?`, and `**` patterns
+- 📂 **Directory Matching** - Proper handling of directory-only patterns with `/`
+- 🔒 **Cross-Platform** - Consistent behavior across Windows, macOS, and Linux
+- ⚡ **Memory Efficient** - Minimal memory footprint with lazy evaluation
+- 🛡️ **Error Handling** - Comprehensive error reporting and validation
+- 📝 **Well Documented** - Extensive examples and godoc documentation
 
 ## Installation
-
-To install **go-dotignore** in your Go project, run:
 
 ```bash
 go get github.com/codeglyph/go-dotignore
 ```
 
-## Getting Started
-
-### Example: Basic Usage
-
-Here is a simple example of how to use **go-dotignore**:
+## Quick Start
 
 ```go
 package main
 
 import (
- "fmt"
- "log"
- "github.com/codeglyph/go-dotignore"
+    "fmt"
+    "log"
+    "github.com/codeglyph/go-dotignore"
 )
 
 func main() {
- // Define ignore patterns
- patterns := []string{
-  "*.log",
-  "!important.log",
-  "temp/",
- }
+    // Create matcher from patterns
+    patterns := []string{
+        "*.log",           // Ignore all .log files
+        "!important.log",  // But keep important.log
+        "temp/",           // Ignore temp directory
+        "**/*.tmp",        // Ignore .tmp files anywhere
+    }
 
- // Create a new pattern matcher
- matcher, err := dotignore.NewPatternMatcher(patterns)
- if err != nil {
-  log.Fatalf("Failed to create pattern matcher: %v", err)
- }
+    matcher, err := dotignore.NewPatternMatcher(patterns)
+    if err != nil {
+        log.Fatal(err)
+    }
 
- // Check if a file matches the patterns
- isIgnored, err := matcher.Matches("debug.log")
- if err != nil {
-  log.Fatalf("Error matching file: %v", err)
- }
- fmt.Printf("Should ignore 'debug.log': %v\n", isIgnored)
+    // Check if files should be ignored
+    files := []string{
+        "app.log",          // true - matches *.log
+        "important.log",    // false - negated by !important.log
+        "temp/cache.txt",   // true - in temp/ directory
+        "src/backup.tmp",   // true - matches **/*.tmp
+    }
 
- isIgnored, err = matcher.Matches("important.log")
- if err != nil {
-  log.Fatalf("Error matching file: %v", err)
- }
- fmt.Printf("Should ignore 'important.log': %v\n", isIgnored)
+    for _, file := range files {
+        ignored, err := matcher.Matches(file)
+        if err != nil {
+            log.Printf("Error checking %s: %v", file, err)
+            continue
+        }
+        fmt.Printf("%-20s ignored: %v\n", file, ignored)
+    }
 }
 ```
 
-### Example: Parsing a File
+## Usage Examples
 
-To parse patterns from a file, use the `NewPatternMatcherFromFile` method:
+### Loading from File
 
 ```go
-package main
-
-import (
- "log"
- "github.com/codeglyph/go-dotignore"
-)
-
-func main() {
- matcher, err := dotignore.NewPatternMatcherFromFile(".ignore")
- if err != nil {
-  log.Fatalf("Failed to parse ignore file: %v", err)
- }
-
- isIgnored, err := matcher.Matches("example.txt")
- if err != nil {
-  log.Fatalf("Error matching file: %v", err)
- }
- log.Printf("Should ignore 'example.txt': %v", isIgnored)
+// Parse .gitignore file
+matcher, err := dotignore.NewPatternMatcherFromFile(".gitignore")
+if err != nil {
+    log.Fatal(err)
 }
+
+ignored, err := matcher.Matches("build/output.js")
+if err != nil {
+    log.Fatal(err)
+}
+fmt.Printf("Should ignore: %v\n", ignored)
 ```
 
-### Example: Parsing from Reader
-
-To parse patterns from an `io.Reader`, use the `NewPatternMatcherFromReader` method:
+### Loading from Reader
 
 ```go
-package main
-
 import (
- "bytes"
- "log"
- "github.com/codeglyph/go-dotignore"
+    "strings"
+    "github.com/codeglyph/go-dotignore"
 )
 
-func main() {
- reader := bytes.NewBufferString("**/temp\n!keep/")
- matcher, err := dotignore.NewPatternMatcherFromReader(reader)
- if err != nil {
-  log.Fatalf("Failed to parse patterns from reader: %v", err)
- }
+patterns := `
+# Dependencies
+node_modules/
+vendor/
 
- isIgnored, err := matcher.Matches("temp/file.txt")
- if err != nil {
-  log.Fatalf("Error matching file: %v", err)
- }
- log.Printf("Should ignore 'temp/file.txt': %v", isIgnored)
+# Build outputs
+*.exe
+*.so
+*.dylib
+dist/
+
+# Logs
+*.log
+!debug.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+`
+
+reader := strings.NewReader(patterns)
+matcher, err := dotignore.NewPatternMatcherFromReader(reader)
+if err != nil {
+    log.Fatal(err)
 }
 ```
 
-## Advanced Features
+### Advanced Pattern Examples
 
-### Negation Patterns
+```go
+patterns := []string{
+    // Basic wildcards
+    "*.txt",              // All .txt files
+    "file?.log",          // file1.log, fileA.log, etc.
 
-Negation patterns (`!`) allow you to override ignore rules. For example:
+    // Directory patterns
+    "cache/",             // Only directories named cache
+    "logs/**",            // Everything in logs directory
 
-- `*.log` ignores all `.log` files.
-- `!important.log` includes `important.log` even though `.log` files are ignored.
+    // Recursive patterns
+    "**/*.test.js",       // All .test.js files anywhere
+    "**/node_modules/",   // node_modules at any level
 
-### Wildcard Support
+    // Negation patterns
+    "build/",             // Ignore build directory
+    "!build/README.md",   // But keep README.md in build
 
-- `*` matches any string except `/`.
-- `?` matches any single character except `/`.
-- `**` matches any number of directories.
+    // Complex patterns
+    "src/**/temp/",       // temp directories anywhere under src
+    "*.{log,tmp,cache}",  // Multiple extensions (if supported)
+}
+```
 
-### Directory Matching
+## Pattern Syntax
 
-- `dir/` matches only directories named `dir`.
-- `dir/**` matches everything inside `dir` recursively.
+### Wildcards
 
-### Custom Ignore Files
+| Pattern | Description                 | Example Matches                            |
+| ------- | --------------------------- | ------------------------------------------ |
+| `*`     | Any characters except `/`   | `*.txt` → `file.txt`, `data.txt`           |
+| `?`     | Single character except `/` | `file?.txt` → `file1.txt`, `fileA.txt`     |
+| `**`    | Zero or more directories    | `**/test` → `test`, `src/test`, `a/b/test` |
 
-**go-dotignore** supports custom ignore files. Simply provide the file path or patterns programmatically using `NewPatternMatcherFromFile` or `NewPatternMatcher`.
+### Directory Patterns
 
-### Non-Nested Processing
+| Pattern   | Description            | Example Matches                     |
+| --------- | ---------------------- | ----------------------------------- |
+| `dir/`    | Directory only         | `build/` → `build/` (directory)     |
+| `dir/**`  | Directory contents     | `src/**` → everything in `src/`     |
+| `**/dir/` | Directory at any level | `**/temp/` → `temp/`, `cache/temp/` |
 
-The library does not automatically process nested `.gitignore` files or directory-level `.ignore` files. All patterns are treated as coming from a single source file or list.
+### Negation
 
-### Specification Compliance
+```go
+patterns := []string{
+    "*.log",           // Ignore all .log files
+    "!important.log",  // Exception: keep important.log
+    "temp/",           // Ignore temp directory
+    "!temp/keep.txt",  // Exception: keep temp/keep.txt
+}
+```
 
-**go-dotignore** follows the [`.gitignore` specification](https://git-scm.com/docs/gitignore) closely, ensuring consistent behavior with Git's pattern matching rules.
-
-## Contributing
-
-We welcome contributions to **go-dotignore**! Here's how you can contribute:
-
-1. Fork the repository.
-2. Create a new branch for your changes.
-3. Add tests for your changes (if applicable).
-4. Run all tests to ensure nothing breaks.
-5. Submit a pull request.
-
-### Issue Templates
-
-We encourage you to follow these templates when creating an issue:
-
-#### Bug Report
-
-- **Title**: A short and descriptive title.
-- **Description**: What went wrong? Include steps to reproduce the issue.
-- **Expected Behavior**: What you expected to happen.
-- **Environment**: Include Go version, OS, and library version.
-- **Additional Context**: Add any logs, error messages, or relevant information.
-
-#### Feature Request
-
-- **Title**: A concise summary of the feature.
-- **Description**: What problem does this feature solve?
-- **Proposed Solution**: How should the feature work?
-- **Additional Context**: Provide any mockups, examples, or supporting details.
-
-### Pull Request Guidelines
-
-- Ensure your code passes all tests.
-- Write clear and concise commit messages.
-- Provide a description of the change and link to related issues (if any).
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
-
-## Acknowledgements
-
-This library is inspired by Git's `.gitignore` pattern matching and aims to bring the same functionality to Go projects.
+**Note**: Pattern order matters! Later patterns override earlier ones.
